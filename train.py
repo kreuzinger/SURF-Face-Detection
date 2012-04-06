@@ -58,7 +58,7 @@ def get_face_data(image_filenames):
         for j in range(len(keypoints)):
             if len(keypoints[j]) > parameter.min_features: # only save data with minimal amount of features
                 if parameter.save_images == 1: # only save image-data, when parameter says 1 (for performance)
-                    face_data.append(Face_Data(keypoints[j], descriptors[j], (cropped_faces[j].rows, None ,cropped_faces[j]))) # create container for face data
+                    face_data.append(Face_Data(keypoints[j], descriptors[j], (cropped_faces[j].rows, None) ,cropped_faces[j])) # create container for face data
                 else:
                     if parameter.save_images != 0:
                         logging.critical('Invalid parameter "save-images", must be 0 or 1 - now changed to 0 (train.py)')
