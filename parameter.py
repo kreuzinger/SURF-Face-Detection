@@ -2,8 +2,13 @@ import logging
 
 #Parameter for whole Programm
 ##################################
-save_images = 0                                     # for faster computing the saving of images and faces can be deactivated (0 = no, 1 = yes=
-pickle_filename = 'C:/Users/Home/Eigene_Dokumente_-_nicht_synchronisiert/Studium_Technikum_Wien/Master_Thesis/Trainingsdatenbanken/Trainierte_Daten/t_data_SURF01.pickle'
+train = 1
+pickle_data = 1
+pickle_filename = 'C:/Users/Home/Eigene_Dokumente_-_nicht_synchronisiert/Studium_Technikum_Wien/Master_Thesis/Trainingsdatenbanken/Trainierte_Daten/test.pickle'
+
+search = 1
+
+save_images = 1                                     # for faster computing the saving of images and faces can be deactivated (0 = no, 1 = yes=
 logger = logging.getLogger('myLogger');
 logger.root.setLevel(logging.INFO)                  #DEBUG, INFO, WARN, ERROR, CRITICAL
 """     logging.debug('Debug') #Detailed information, typically of interest only when diagnosing problems.
@@ -26,11 +31,11 @@ min_facesize = (150, 150)                           # Minimum possible object si
 
 max_facesize = (800.0,800.0)                        # facesize will be reduced to that size for performance (hint: number must be decimal)
 
-description_method = 'surf'
+description_method = 'sift'
 #SURF-Description
 face_enlargement = 1.2                                # enlarge face BEFORE starting SURF (Example: 'None' for no enlargement, '1.5' for enlarge picture with 50 %)
 
-min_features = 50                                   # only faces with this minimal amount of features will be analysed
+min_features = 10                                   # only faces with this minimal amount of features will be analysed
 hessian_threshold = 300                            # Threshold for hessian keypoint detector used in SURF
 nOctaves = 3                                        # Number of pyramid octaves the keypoint detector will use
 nOctaveLayers = 8                                   # Number of octave layers within each octave
