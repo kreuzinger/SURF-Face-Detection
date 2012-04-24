@@ -59,13 +59,13 @@ def convert_for_pickle(data):
         logging.debug('Start convert file %s' % data[i].filename)
         #convert image to numpy array if exists
         try:
-            if data[i].image:
+            if hasattr(data[i], 'image'):
                 if type(data[i].image) == cv2.cv.iplimage:
                     logging.debug('Start convert image from format iplimage to numpy-array (persistence.py)')
                     data[i].image = tools.cv2array(data[i].image)
         except AttributeError, msg:
             logging.error('Error in Converting Image. Maybe there is no image in file %s (persistence.py). Error message: ' % (data[i].filename, msg))
-            sys.exit()
+            #sys.exit()
             
         #convert face if exists
         try:
@@ -110,9 +110,10 @@ def convert_after_pickle(data):
         logging.debug('Start convert file %s ' % data[i].filename)
         #convert numpy array to iplimage
         try:
-            if type(data[i].image) == np.ndarray:
-                logging.debug('Start convert image from format numpy-array to iplimage(persistence.py)')
-                data[i].image = tools.array2cv(data[i].image)
+            if hasattr(data[i], 'image'):
+                if type(data[i].image) == np.ndarray:
+                    logging.debug('Start convert image from format numpy-array to iplimage(persistence.py)')
+                    data[i].image = tools.array2cv(data[i].image)
 
         except AttributeError, msg:
             logging.debug('Error converting image: No image-data found or wrong format(persistence.py). Error message: %s' % msg)

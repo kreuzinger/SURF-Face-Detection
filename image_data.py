@@ -3,10 +3,11 @@ class Image_Data:
     'trained_data[0].facedata[0].keypoints'
     for the keypoints of the first face"""
 
-    def __init__(self, one_filename, one_coordinates, one_image = None):
+    def __init__(self, one_filename):
         """contains the basic data of the train-image"""
-
         self.filename = one_filename
+        
+    def add_image_data(self, one_coordinates, one_image = None):
         self.image = one_image
         self.coordinates = one_coordinates
 
