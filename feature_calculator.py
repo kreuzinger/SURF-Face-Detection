@@ -9,7 +9,7 @@ import sift
 
 
 
-class surf_detector:
+class feature_calculator:
     
     def __init__(self):
         """  offen"""
