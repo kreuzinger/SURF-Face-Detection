@@ -70,7 +70,7 @@ if parameter.search == 1:
     search_data = train.get_face_data(image_filenames) # get image-data for the seach-images
 
     # search, sort and save data (If no training-data is submitted, it should load and compare with the pickled training file)
-    (search_data, match_data) = search.compute_search_sort(search_data, trained_data) 
+    match_data = search.compute_search_sort(search_data, trained_data) 
 
     # show top matched results
     tools.topresults(match_data)
