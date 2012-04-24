@@ -10,9 +10,9 @@ class descriptor_matcher:
 
     def match(self, trained_data, search_data):
         
-        def match_and_draw(match_bruteforce, r_threshold, i, trained_data):
+        def match_and_draw(match_bruteforce, i, trained_data):
             logging.debug('Start method match_and_draw (descriptor_matcher.py)')
-            m = match_bruteforce(desc1, desc2, r_threshold)
+            m = match_bruteforce(desc1, desc2)
 
             if len(m) < parameter.min_matches: # must be at least 4 otherwise algorithm crashes
                 vis = None
@@ -61,7 +61,7 @@ class descriptor_matcher:
                     kp1 = trained_data[i].facedata[j].keypoints
                     logging.debug('Face %d from train-image: %s - %d features, search-image: %s - %d features (descriptor_matcher.py)' % ((j+1),trained_data[i].filename, len(kp1), search_data.filename, len(kp2)))
 
-                    (vis_brute, matchvalue, nbr_matches) = match_and_draw(self.match_bruteforce, parameter.bruteforce_threshold, i, trained_data)
+                    (vis_brute, matchvalue, nbr_matches) = match_and_draw(self.match_bruteforce, i, trained_data)
                     if matchvalue == None:
                         logging.debug('No matchvalue for file %s. Maybe not enough matches? (descriptor_matcher.py)', trained_data[i].filename)
                     else:
@@ -76,14 +76,14 @@ class descriptor_matcher:
                 logging.debug('Match with file %s not possible - there are no face-data saved (descriptor_matcher.py)' % trained_data[i].filename)
         return matcheddata
           
-    def match_bruteforce(self, desc1, desc2, r_threshold = 0.75):
+    def match_bruteforce(self, desc1, desc2):
         logging.debug('Start Methode match_bruteforce (descriptor_matcher.py)')       
         res = []        
         for j in xrange(len(desc1)):
             dist = tools.anorm(desc2 - desc1[j])
             n1, n2 = dist.argsort()[:2]
             r = dist[n1] / dist[n2]
-            if r < r_threshold: # only distances within threshold will be returned
+            if r < parameter.bruteforce_threshold: # only distances within threshold will be returned
                 res.append((j, n1))
         return np.array(res) # position j and n1 is returned
 
