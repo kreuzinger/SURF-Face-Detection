@@ -3,6 +3,7 @@ import logging
 from match_data import Match_Data
 from match_data import Matched_Data
 import sys
+import persistence
 
 def compute_search_sort(search_data, trained_data):
     """ compare two datasets
