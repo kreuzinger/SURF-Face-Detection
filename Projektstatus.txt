@@ -1,5 +1,0 @@
-Bis hierher funktioniert es, dass SURF Matching durchzuführen
-
-Mit dieser Version begonnen, weil ich SIFT eingebaut habe
-
-Neue Version begonnen, weil 
