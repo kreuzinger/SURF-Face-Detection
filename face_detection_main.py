@@ -2,17 +2,15 @@ import tools
 import train
 import search
 import cv2
-import numpy as np
 import persistence
 import logging
 import time
 import parameter
 
-help_message = '''Face Detection 
+help_message = '''Face Recognition 
 
-                NOCH AKTUALISIEREN:
                 USAGE: face_detection_main.py [ <searchimage> ]
-                Determine the configuration file parameter.py (mode, trainfolder, searchmode)
+                Determine the configuration file parameter.py (mode, trainfolder, searchmode, etc)
                 '''
 
 t0 = time.time()        # count execution-time for whole programm
@@ -23,7 +21,7 @@ logging.info('Current Log-Level: %s' % logging.getLevelName(logging.getLogger('m
 if parameter.train == 1:
     #start train
     ##############################################
-    print 'TRAINING STARTET'
+    print 'TRAINING STARTED'
 
     # foldername containing the training images
     trainfolder = "train"                               
@@ -39,10 +37,8 @@ if parameter.train == 1:
         persistence.safe_data(trained_data)
         print time.time() - t0, "seconds" # print execution-time for Training
         
-    print 'TRAINING ABGESCHLOSSEN'
-
-    
-    
+    print 'TRAINING FINISHED'
+   
     #optional evaluation
     ###############################################
 
@@ -54,20 +50,19 @@ if parameter.train == 1:
 
 
 
-
 if parameter.search == 1:
     #start search
     ##############################################
-    print 'SUCHE STARTET'
+    print 'SEARCH STARTED'
 
     # foldername containing the search images
     searchfolder = "search"                             
-
+    
     try:
-        print trained_data[0]
+        trained_data
     except:
-        trained_data = ""
-
+        trained_data = None
+    
     # get filenames in the training folder
     image_filenames = tools.get_images(searchfolder)
 
@@ -80,7 +75,7 @@ if parameter.search == 1:
     # show top matched results
     tools.topresults(match_data)
 
-    print 'SUCHE ABGESCHLOSSEN'
+    print 'SEARCH FINISHED'
 
 
 print time.time() - t0, "seconds" # print execution-time for whole programm
