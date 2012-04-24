@@ -174,10 +174,13 @@ def str2keypoint(keypoint_str):
 def enlarge_image(image, factor):
     """ Enlarge the image to the given size
     Image must be of type cv.cvmat"""
+
+    
     if type(image).__name__=='cvmat':
         new_image = cv.CreateMat(int(round(image.height * factor)), int(round(image.width * factor)), cv.GetElemType(image))
         cv.Resize(image, new_image)
         image = new_image
+        logging.debug('Image has been enlarged with factor %.3f (face-detector.py)' % (factor))
         return image
     else:
         logging.error('Unkown Image Type (tools.py)')
@@ -245,4 +248,10 @@ def array2cv(a):
         nChannels = 1 
     cv_im = cv.CreateImageHeader((a.shape[1],a.shape[0]), dtype2depth[str(a.dtype)], nChannels) 
     cv.SetData(cv_im, a.tostring(),a.dtype.itemsize*nChannels*a.shape[1]) 
-    return cv_im 
+    return cv_im
+
+
+def anorm2(a):
+    return (a*a).sum(-1)
+def anorm(a):
+    return np.sqrt( anorm2(a) )

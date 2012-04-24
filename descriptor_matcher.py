@@ -1,6 +1,4 @@
 import cv2
-from common import anorm
-from functools import partial
 import numpy as np
 import tools
 import logging
@@ -8,24 +6,15 @@ import sys
 from match_data import Matched_Data
 import parameter
 
-
 class descriptor_matcher:
-    def __init__(self):
-        """ offen"""
 
     def match(self, trained_data, search_data):
-        matcheddata = []
-        logger = logging.getLogger('myLogger')
-        
-        # Comparision is only computed with the first found face in the searchfile. If more than one faces are found, the second, third, ... face is not computed
-        desc2 = search_data.facedata[0].descriptors
-        kp2 = search_data.facedata[0].keypoints
         
         def match_and_draw(match_bruteforce, r_threshold, i, trained_data):
-            logging.debug('Start Methode match_and_draw (descriptor_matcher.py)')
+            logging.debug('Start method match_and_draw (descriptor_matcher.py)')
             m = match_bruteforce(desc1, desc2, r_threshold)
 
-            if len(m) < parameter.min_matches: # must be at least 4. otherwise algorithm crashes
+            if len(m) < parameter.min_matches: # must be at least 4 otherwise algorithm crashes
                 vis = None
                 matchvalue = None
                 nbr_matches = None
@@ -35,26 +24,19 @@ class descriptor_matcher:
                 matched_p1 = np.array([kp1[k].pt for k, l in m])
                 matched_p2 = np.array([kp2[l].pt for k, l in m])
      
-                H, status = cv2.findHomography(matched_p1, matched_p2, cv2.RANSAC, 5.0)  # je hoeher der letzte Wert, desto mehr der gefundenen matches werden als inlier gekennzeichnet
+                H, status = cv2.findHomography(matched_p1, matched_p2, cv2.RANSAC, 5.0) 
                 logging.debug('%d / %d  inliers/matched (descriptor_matcher.py)' % (np.sum(status), len(status)))
                 
-                #Calculate the matching in a prozent value
+                #Calculate the matching in a procent value
                 matchvalue = float(len(status))/float(len(kp2))*1.0
-                #print ('Verhaeltnis inlier zu match: ', float(np.sum(status))/float(len(status)))
-                logging.debug('Verhaeltnis match zu Featurezahl von Suchbild: %.5f (descriptor_matcher.py)' % matchvalue)
-                #print ('Verhaeltnis match zu Featurezahl von Trainingsbild: ', float(len(status))/float(len(kp1)))
+                logging.debug('ratio number of matches and number of features in searchimage: %.5f (descriptor_matcher.py)' % matchvalue)
                 
                 # only draw-match, when images are available 
                 if parameter.save_images == 1:
-                    # Derzeit wird NUR mit dem ersten gefundenen Gesicht verglichen
                     img1 = trained_data[i].facedata[j].face
-
-                    #Konvertierung erfolgt beim picklen daher wird dieser Code nur mehr in Ausnahmefaellen benoetigt
-                    if type(img1) == cv2.cv.cvmat:
-                        img1 = np.array(img1) # img's muss als numpy.array vorliegen, damit es bei den folgenden Methoden zur Aehnlichkeitsberechnung und darstellung funktioniert
-
+                    # Comparision is only computed with the first found face in the searchfile
                     img2 = search_data.facedata[0].face
-                    img2 = np.array(img2)
+                    img2 = np.array(img2)                   
                     vis = self.draw_match(img1, img2, matched_p1, matched_p2, status, H)
                 else:
                     if parameter.save_images != 0:
@@ -64,7 +46,12 @@ class descriptor_matcher:
                 nbr_matches = len(status)
                 return vis, matchvalue, nbr_matches
 
-
+        matcheddata = []
+        logger = logging.getLogger('myLogger')
+        
+        # Comparision is only computed with the first found face in the searchfile. If more than one faces are found, the second, third, ... face is not computed
+        desc2 = search_data.facedata[0].descriptors
+        kp2 = search_data.facedata[0].keypoints
         for i in range(len(trained_data)):
             if hasattr(trained_data[i], 'facedata'):
                 logging.debug('Start match with trained file %s (descriptor_matcher.py)' % trained_data[i].filename)
@@ -74,12 +61,11 @@ class descriptor_matcher:
                     kp1 = trained_data[i].facedata[j].keypoints
                     logging.debug('Face %d from train-image: %s - %d features, search-image: %s - %d features (descriptor_matcher.py)' % ((j+1),trained_data[i].filename, len(kp1), search_data.filename, len(kp2)))
 
-                    # Reihenfolge: 1. match_and_draw, 2. match_bruteforce (wird als callback-Methode mitgegeben, Aufruf erfolgt erst in der Methode "Match and Draw"),  3. draw_match               
-                    (vis_brute, matchvalue, nbr_matches) = match_and_draw(self.match_bruteforce, parameter.bruteforce_threshold, i, trained_data) # je hoeher der threshold-Wert, desto geringer ist der Threshold und desto mehr Features werden ge-macht => vermutlich ist 0.9 zu hoch
+                    (vis_brute, matchvalue, nbr_matches) = match_and_draw(self.match_bruteforce, parameter.bruteforce_threshold, i, trained_data)
                     if matchvalue == None:
                         logging.debug('No matchvalue for file %s. Maybe not enough matches? (descriptor_matcher.py)', trained_data[i].filename)
                     else:
-                        # only append images when available (for performance)
+                        # only append images when available
                         if parameter.save_images == 1: 
                             matcheddata.append(Matched_Data(trained_data[i].filename, matchvalue, nbr_matches, trained_data[i].facedata[j].face, vis_brute))
                         else:
@@ -94,33 +80,15 @@ class descriptor_matcher:
         logging.debug('Start Methode match_bruteforce (descriptor_matcher.py)')       
         res = []        
         for j in xrange(len(desc1)):
-            
-            ####################################
-            #print 'len(desc1): ', len(desc1)
-            #print('desc1 is of type ',type(desc1))
-            #desc1 = np.array(desc1)
-            #desc2 = np.array(desc2)
-            #print('desc1 converted is of type ',type(desc1))
-            ##################################
-
-            dist = anorm( desc2 - desc1[j] )
+            dist = tools.anorm(desc2 - desc1[j])
             n1, n2 = dist.argsort()[:2]
             r = dist[n1] / dist[n2]
-            if r < r_threshold: # nur Distanzen, welche innerhalb des Thresholdes sind, werden zurueckgegeben
-                res.append((j, n1)) # j ist wahrscheinlich die Position und n1 ?
-        return np.array(res) # es wird die Position j und n1 zurueckgegeben
-
+            if r < r_threshold: # only distances within threshold will be returned
+                res.append((j, n1))
+        return np.array(res) # position j and n1 is returned
 
     def draw_match(self, img1, img2, p1, p2, status = None, H = None):
-        logging.debug('Start Methode draw_match (descriptor_matcher.py)')
-        #####################################################
-        #print img1.shape
-        #print img2.shape
-        #print img1
-        #print img2
-        #tools.show_images(img1)
-        #tools.show_images(img2)
-        ###################################
+        logging.debug('Start method draw_match (descriptor_matcher.py)')
 
         h1, w1 = img1.shape[:2]
         h2, w2 = img2.shape[:2]
