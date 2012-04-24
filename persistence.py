@@ -8,8 +8,6 @@ import tools
 import logging
 import parameter
 
-""" wird derzeit nicht verwendet - brauche ich das speichern ueberhaupt noch?"""
-
 
 def safe_data(data):
     """pickle data object"""
@@ -49,12 +47,11 @@ def load_data():
 
 
 def convert_for_pickle(data):
-    """ konvertiert die Daten in ein fuer das Pickeln notwendiges Format:
-    data.image: von cv2.cv.iplimage nach numpy.ndarray
-    data.facedata.face: von cv2.cv.cvmat nach numpy.ndarray
-    data.facedata.keypoint: von typ Keypoint nach string"""
-    
-    
+    """ converts data for pickle into necessary format:
+    data.image: from cv2.cv.iplimage to numpy.ndarray
+    data.facedata.face: from cv2.cv.cvmat to numpy.ndarray
+    data.facedata.keypoint: from type Keypoint to string"""
+
     for i in range(len(data)):
         logging.debug('Start convert file %s' % data[i].filename)
         #convert image to numpy array if exists
@@ -65,7 +62,6 @@ def convert_for_pickle(data):
                     data[i].image = tools.cv2array(data[i].image)
         except AttributeError, msg:
             logging.error('Error in Converting Image. Maybe there is no image in file %s (persistence.py). Error message: ' % (data[i].filename, msg))
-            #sys.exit()
             
         #convert face if exists
         try:
@@ -83,14 +79,12 @@ def convert_for_pickle(data):
         try:
             if data[i].facedata: # check if this image has faces with corresponding data
                 for j in range(len(data[i].facedata)):
-
                     if not data[i].facedata[j].keypoints:
-                        logging.warn('Kein Keypoint in Nr %d von Datei %s (persistence.py)' % ((j+1), data[i].filename))
+                        logging.warn('No Keypoint in Nr %d from file %s (persistence.py)' % ((j+1), data[i].filename))
                     else:
                         logging.debug('Start converting keypoints for face %s (persistence.py)' % str(j+ 1))
-                        for k in range(len(data[i].facedata[j].keypoints)):                         
-                            
-                            data[i].facedata[j].keypoints[k] = tools.keypoint2str(data[i].facedata[j].keypoints[k])
+                        for k in range(len(data[i].facedata[j].keypoints)):                                                  
+                            data[i].facedata[j].keypoints[k] = keypoint2str(data[i].facedata[j].keypoints[k])
                      
         except AttributeError, msg:
             logging.info('Error in Converting Keypoints. Maybe there is no keypoint in file %s (persistence.py). Error message: %s' % (data[i].filename, msg))
@@ -99,12 +93,10 @@ def convert_for_pickle(data):
 
 
 def convert_after_pickle(data):    
-    """ konvertiert die Daten in ein fuer die Weiterverarbeitung notwendiges Format:
-    data.image: von numpy.ndarray nach cv2.cv.iplimage  
-    data.facedata.face: wird NICHT mehr zurueckkonvertiert, da fuer Weiterverarbeitung die Daten als numpy.ndarray vorliegen muessen
-    data.facedata.keypoint: von string nach typ Keypoint"""
-
-
+    """ converts data back into original type if further processed:
+    data.image: from  numpy.ndarray to cv2.cv.iplimage  
+    data.facedata.face: not converted because face is needed as type numpy.ndarray 
+    data.facedata.keypoint: from  string to typ Keypoint"""
         
     for i in range(len(data)):
         logging.debug('Start convert file %s ' % data[i].filename)
@@ -126,10 +118,29 @@ def convert_after_pickle(data):
                 if hasattr(data[i].facedata[j], 'keypoints'):
                     logging.debug('Start convert keypoints for face Nr %s (persistence.py)' % str(j+ 1))
                     for k in range(len(data[i].facedata[j].keypoints)):
-                        data[i].facedata[j].keypoints[k] = tools.str2keypoint(data[i].facedata[j].keypoints[k])
+                        data[i].facedata[j].keypoints[k] = str2keypoint(data[i].facedata[j].keypoints[k])
                 else:
                     logging.debug('No Keypoints found in file %s (persistence.py)' % data[i].filename)
     
         else:
             logging.debug('No facedata found in file %s (persistence.py)' % data[i].filename)
 
+def keypoint2str(keypoint):
+    """ convert OpenCV Keypoints into string to pickle the data"""
+    keypoint_str = []
+    keypoint_str.append(float(keypoint.pt[0]))
+    keypoint_str.append(float(keypoint.pt[1]))
+    keypoint_str.append(float(keypoint.size))
+    keypoint_str.append(float(keypoint.angle))
+    keypoint_str.append(float(keypoint.response))
+    keypoint_str.append(float(keypoint.octave))
+    keypoint_str.append(float(keypoint.class_id))    
+    return keypoint_str
+
+def str2keypoint(keypoint_str):
+    """ convert OpenCV Keypoints from string into keypoint-type to process
+    after unpickle the data"""
+    keypoint = cv2.KeyPoint(float(keypoint_str[0]), float(keypoint_str[1]), float(keypoint_str[2]),
+            float(keypoint_str[3]), float(keypoint_str[4]), int(keypoint_str[5]),
+            int(keypoint_str[6]), )
+    return keypoint

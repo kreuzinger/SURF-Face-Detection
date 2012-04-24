@@ -14,7 +14,6 @@ def get_images(path):
     for f in os.listdir(path):
         if f.endswith('bmp') or f.endswith('jpg') or f.endswith('png'):
             image_filenames.append(os.path.join(path,f))
-
     return image_filenames
 
 def show_images(images):
@@ -72,23 +71,15 @@ def show_keypoints(data):
         except:
             logging.error('Error showing keypoints - Maybe no Face in File %s (tools.py)' % data[i].filename)
 
-
             
 def topresults(match_data):
     """ Show top matching results"""
-    # check if machting data exist (zB wenn im Suchbild kein Gesicht gefunden wurde) - koennte ich auch bei Methode search.compute_search_sort pruefen
-    # zuerst wird NUR das erste Suchbild fuer den Vergleich gewaehlt
 
-
-
-    # show given topresults
     with open('match-statistics.csv', 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["Position", "Search-Image", "Train-Image",  "Matching-Value", "Nbr-Matches"])
-
-                
+        
         for i in range(len(match_data)):
-
             if hasattr(match_data[i], 'matcheddata'):
                 nbr_images = len(match_data[i].matcheddata)
                 matchvalues = {}
@@ -98,20 +89,18 @@ def topresults(match_data):
                     # extract matchvalues into tmp dictionary
                     for j in range(nbr_images):
                         if not match_data[i].matcheddata[j].matchvalue:
-                            logging.warn('kein Gesicht in Datei %s gefunden (tools.py)' % match_data[i].searchfilename)
+                            logging.warn('No face found in file %s (tools.py)' % match_data[i].searchfilename)
                         else:   
                             matchvalues[j] = match_data[i].matcheddata[j].matchvalue
 
                     # sort dictionary            
                     sorted_matchvalues = sorted(matchvalues.iteritems(), key=operator.itemgetter(1), reverse=True)
-
-
               
                     nbr_matches = len(sorted_matchvalues)
                     for j in range(nbr_matches):     
                         if (j+1) <= int(parameter.number_topresults): # only show given number of topresults
                             if not match_data[i].matcheddata[j].matchvalue:
-                                logging.warn('kein Gesicht in Datei %s gefunden (tools.py)' % match_data[i].filename)
+                                logging.warn('No face found in file %s (tools.py)' % match_data[i].filename)
                             else:
                                 print('Nr. %d with MatchingValue %.5f (left %s, right %s, %d matches) (tools.py)' %((j+1), float(sorted_matchvalues[j][1]),match_data[i].matcheddata[sorted_matchvalues[j][0]].filename, match_data[i].searchfilename, match_data[i].matcheddata[sorted_matchvalues[j][0]].nbr_matches))
 
@@ -147,28 +136,6 @@ def count_features(data):
                     writer.writerow([data[i].filename, "no data saved"])
             except AttributeError:
                 logging.error('Error counting features for file %s (tools.py)' % data[i].filename)
-                
-                
-
-def keypoint2str(keypoint):
-    """ convert OpenCV Keypoints into string to pickle the data"""
-    keypoint_str = []
-    keypoint_str.append(float(keypoint.pt[0]))
-    keypoint_str.append(float(keypoint.pt[1]))
-    keypoint_str.append(float(keypoint.size))
-    keypoint_str.append(float(keypoint.angle))
-    keypoint_str.append(float(keypoint.response))
-    keypoint_str.append(float(keypoint.octave))
-    keypoint_str.append(float(keypoint.class_id))    
-    return keypoint_str
-
-def str2keypoint(keypoint_str):
-    """ convert OpenCV Keypoints from string into keypoint-type to process
-    after unpickle the data"""
-    keypoint = cv2.KeyPoint(float(keypoint_str[0]), float(keypoint_str[1]), float(keypoint_str[2]),
-            float(keypoint_str[3]), float(keypoint_str[4]), int(keypoint_str[5]),
-            int(keypoint_str[6]), )
-    return keypoint
 
 
 def enlarge_image(image, factor):
@@ -201,16 +168,8 @@ def downsize_image(image):
     return new_face, downsize_factor
 
 
-
-"""Die Methode cv2array funktioniert nicht
-Verwende derzeit in surf_detector die Methode "np.asarray(faces[i])",
-Alternative ist die Datei zu speichern und erneut mit numpy zu laden:
-cv.SaveImage('tmp.jpg', faces[i])
-face_numpy = cv2.imread('tmp.jpg', 0)
-"""
 def cv2array(im):
-    """ convert from type cv into type array
-    Quelle fuer Konvertierung: http://opencv-users.1802565.n2.nabble.com/RGB-IPLimage-gt-numpy-array-td3874712.html"""
+    """ convert from type cv into type array"""
 
     depth2dtype = { 
         cv.IPL_DEPTH_8U: 'uint8', 
@@ -231,8 +190,7 @@ def cv2array(im):
     return a 
 
 def array2cv(a):
-    """ convert from type array into type cv
-    Quelle fuer Konvertierung: http://opencv-users.1802565.n2.nabble.com/RGB-IPLimage-gt-numpy-array-td3874712.html"""
+    """ convert from type array into type cv"""
     dtype2depth = { 
         'uint8':   cv.IPL_DEPTH_8U, 
         'int8':    cv.IPL_DEPTH_8S, 
