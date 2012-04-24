@@ -20,8 +20,6 @@ logger.root.setLevel(logging.INFO)                  #DEBUG, INFO, WARN, ERROR, C
 
 #PARAMETER FOR TRAIN
 #######################
-min_imagesize = None #(800, 800, 1)                       # all images smaller than this heigth and width (pixel) will be resized with this factor to find more faces and features (Example: 'None' for no enlargement, '1.5' for enlarge picture with 50 %)
-
 #Viola-Jones Detection
 cascadefile = "haarcascade_frontalface_default.xml" # name of cascadefile for detecting the faces
 scaleFactor = 1.1                                    # Parameter specifying how much the image size is reduced at each image scale. (standard value = 1.1 - http://opencv.itseez.com/modules/objdetect/doc/cascade_classification.html?highlight=cv.haar#cv.HaarDetectObjects)
@@ -31,7 +29,7 @@ min_facesize = (150, 150)                           # Minimum possible object si
 
 max_facesize = (800.0,800.0)                        # facesize will be reduced to that size for performance (hint: number must be decimal)
 
-description_method = 'sift'
+description_method = 'surf'
 #SURF-Description
 face_enlargement = 1.2                                # enlarge face BEFORE starting SURF (Example: 'None' for no enlargement, '1.5' for enlarge picture with 50 %)
 
