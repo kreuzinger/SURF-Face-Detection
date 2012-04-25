@@ -90,6 +90,13 @@ class descriptor_matcher:
     def draw_match(self, img1, img2, p1, p2, status = None, H = None):
         logging.debug('Start method draw_match (descriptor_matcher.py)')
 
+        if type(img1) == cv2.cv.cvmat:
+            logging.debug('Start convert image from format iplimage to numpy-array (persistence.py)')
+            img1 = np.array(img1)
+        if type(img2) == cv2.cv.cvmat:
+            logging.debug('Start convert image from format iplimage to numpy-array (persistence.py)')
+            img2 = np.array(img2)
+
         h1, w1 = img1.shape[:2]
         h2, w2 = img2.shape[:2]
         vis = np.zeros((max(h1, h2), w1+w2), np.uint8)
