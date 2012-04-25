@@ -2,13 +2,13 @@ import logging
 
 #Parameter for whole Programm
 ##################################
-train = 1
-pickle_data = 1
-pickle_filename = 'C:/Users/Home/Eigene_Dokumente_-_nicht_synchronisiert/Studium_Technikum_Wien/Master_Thesis/Trainingsdatenbanken/Trainierte_Daten/test.pickle'
+train = 1                                           # 1 = Yes, 0 = No
+pickle_data = 1                                     # 1 = Yes, 0 = No
+pickle_filename = 'test.pickle'
 
-search = 0
+search = 1                                          # 1 = Yes, 0 = No
 
-save_images = 0                                   # for faster computing the saving of images and faces can be deactivated (0 = no, 1 = yes=
+save_images = 1                                     # 1 = Yes, 0 = No (for faster computing the saving of images and faces can be deactivated
 logger = logging.getLogger('myLogger');
 logger.root.setLevel(logging.INFO)                  # DEBUG, INFO, WARN, ERROR, CRITICAL
 """     logging.debug('Debug') #Detailed information, typically of interest only when diagnosing problems.
@@ -39,6 +39,7 @@ nOctaves = 3                                        # Number of pyramid octaves 
 nOctaveLayers = 8                                   # Number of octave layers within each octave
 
 #SIFT-Description
+# no parameters
 
 
 #PARAMETER FOR SEARCH
