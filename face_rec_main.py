@@ -43,10 +43,10 @@ if parameter.train == 1:
     ###############################################
 
     # show training-images and paint keypoints into the pictures
-    # tools.show_keypoints(trained_data)
+    #tools.show_keypoints(trained_data)
 
     # count and save features from trained data
-    # tools.count_features(trained_data)
+    tools.count_features(trained_data)
 
 
 
