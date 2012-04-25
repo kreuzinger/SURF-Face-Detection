@@ -1,0 +1,16 @@
+Installation:
+--------------
+You need the following Software to run this program:
+
+- Python 2.7.2
+- NumPy 1.6.1
+- SciPy 0.10.0
+- PIL 1.1.7
+- Pylab 1.1.0
+- OpenCV 2.3.1
+
+Start Program:
+---------------
+1. Create 2 subfolders "train" and "search" containing the training-images and the search-images
+2. Configure the parameters in "parameter.py"
+3. Run programm - main class: "face_rec_main.py"
